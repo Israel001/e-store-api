@@ -1,0 +1,27 @@
+version: '3'
+services:
+  e-store:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mongo
+      DB_USER: admin
+      DB_PASSWORD: password
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules/
+
+  mongo:
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    env_file:
+      - .env
+    command: --auth
