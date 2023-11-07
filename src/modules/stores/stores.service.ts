@@ -55,11 +55,11 @@ export class StoresService {
     { userId }: IAuthContext,
   ) {
     const storeInDb = await this.checkIfStoreExists(id, userId);
-    const duplicateFound = await this.storeModel.findOne({
+    const duplicateFound = await this.storeModel.find({
       name: store.name,
       _id: { $ne: id },
     });
-    if (duplicateFound)
+    if (duplicateFound.length)
       throw new ConflictException(
         `Another store with name: ${store.name} already exists`,
       );
@@ -79,12 +79,10 @@ export class StoresService {
   }
 
   async checkIfStoreExists(storeId: string, userId: string) {
-    const storeExists = await this.storeModel
-      .findOne({
-        _id: new Types.ObjectId(storeId),
-        user: { _id: new Types.ObjectId(userId) },
-      })
-      .exec();
+    const storeExists = await this.storeModel.findOne({
+      _id: new Types.ObjectId(storeId),
+      user: { _id: new Types.ObjectId(userId) },
+    });
     if (!storeExists) throw new NotFoundException('Store not found');
     return storeExists;
   }

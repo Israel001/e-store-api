@@ -12,6 +12,26 @@ export const MockUserSchema = {
   _id: new ObjectId('6548fd31bcab8291bf88fdcd'),
 };
 
+export const MockStoreSchema = {
+  name: 'Jumia Store',
+  products: [],
+  user: MockUserSchema,
+  _id: new ObjectId('6548fd31bcab8291bf88fdcd'),
+};
+
+export const MockPagination = (data: any) => {
+  return {
+    data,
+    pagination: { limit: 20, page: 1, total: 0, size: 0, pages: 0 },
+  };
+};
+
+export const AuthContext = {
+  userId: MockUserSchema._id.toString(),
+  username: MockUserSchema.username,
+  name: MockUserSchema.name,
+};
+
 export const MockUserSchemaWithHashedPassword = {
   name: 'Israel',
   username: 'izzy',
@@ -30,6 +50,11 @@ export const MockUsersService = {
   }),
 };
 
+export const DeleteResult = {
+  acknowledged: true,
+  deletedCount: 1,
+};
+
 export const MockJwtService = {
   sign: jest.fn(() => accessToken),
 };
@@ -42,4 +67,54 @@ export class MockUsersModel {
   save() {
     return MockUserSchemaWithHashedPassword;
   }
+}
+
+export class MockStoresModel {
+  static find = jest.fn().mockImplementation(() => {
+    return {
+      populate: jest.fn(() => {
+        return {
+          sort: jest.fn(() => {
+            return {
+              exec: jest.fn(() => {
+                return [];
+              }),
+            };
+          }),
+        };
+      }),
+    };
+  });
+
+  static findOne = jest.fn().mockImplementation(() => {
+    return {
+      populate: jest.fn(() => {
+        return {
+          exec: jest.fn(),
+        };
+      }),
+    };
+  });
+
+  static deleteMany = jest.fn().mockImplementation(() => {
+    return {
+      exec: jest.fn(),
+    };
+  });
+
+  static deleteOne = jest.fn().mockImplementation(() => {
+    return {
+      exec: jest.fn(() => {
+        return DeleteResult;
+      }),
+    };
+  });
+}
+
+export class MockProductsModel {
+  static deleteMany = jest.fn().mockImplementation(() => {
+    return {
+      exec: jest.fn(),
+    };
+  });
 }
