@@ -42,9 +42,7 @@ describe('UsersService', () => {
     });
 
     it('should throw conflict exception when username is already taken', async () => {
-      MockUsersModel.findOne.mockReturnValue(
-        () => MockUserSchemaWithHashedPassword,
-      );
+      MockUsersModel.findOne.mockReturnValue(MockUserSchemaWithHashedPassword);
       const user = new CreateUserDto();
       user.password = 'password';
       await expect(usersService.createUser(user)).rejects.toThrow(
@@ -54,17 +52,12 @@ describe('UsersService', () => {
   });
 
   describe('FindByUsername Method', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('should return a successful response', async () => {
-      MockUsersModel.findOne.mockResolvedValueOnce(
-        () => MockUserSchemaWithHashedPassword,
+      MockUsersModel.findOne.mockReturnValueOnce(
+        MockUserSchemaWithHashedPassword,
       );
       const findByUsernameSpy = jest.spyOn(usersService, 'findByUsername');
       const result = await usersService.findByUsername(MockUserSchema.username);
-      console.log(result);
       expect(findByUsernameSpy).toHaveBeenCalledWith(MockUserSchema.username);
       expect(result).toEqual(MockUserSchemaWithHashedPassword);
     });
