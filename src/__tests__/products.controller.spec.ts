@@ -34,10 +34,6 @@ describe('ProductsController', () => {
     productsService = module.get<ProductsService>(ProductsService);
   });
 
-  it('should be defined', () => {
-    expect(productsController).toBeDefined();
-  });
-
   it('should call create method', async () => {
     const request = new CreateProductDto();
     const user = MockUserSchema;

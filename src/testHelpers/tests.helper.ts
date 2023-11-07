@@ -35,21 +35,9 @@ export const MockJwtService = {
 };
 
 export class MockUsersModel {
-  static findOne() {
-    return {
-      exec: jest.fn(),
-    };
-  }
+  static findOne = jest.fn();
 
   save() {
     return MockUserSchemaWithHashedPassword;
-  }
-}
-
-export class MockUsersModel2 {
-  static findOne() {
-    return {
-      exec: jest.fn(() => MockUserSchemaWithHashedPassword),
-    };
   }
 }

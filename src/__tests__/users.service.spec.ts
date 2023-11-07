@@ -4,7 +4,6 @@ import {
   MockUserSchema,
   MockUserSchemaWithHashedPassword,
   MockUsersModel,
-  MockUsersModel2,
 } from '../testHelpers/tests.helper';
 import { CreateUserDto } from '../modules/users/users.dto';
 import { User } from '../schemas/user.schema';
@@ -13,7 +12,6 @@ import { ConflictException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let usersService: UsersService;
-  let usersService2: UsersService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -26,17 +24,7 @@ describe('UsersService', () => {
         },
       ],
     }).compile();
-    const module2: TestingModule = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        {
-          provide: getModelToken(User.name),
-          useValue: MockUsersModel2,
-        },
-      ],
-    }).compile();
     usersService = module.get<UsersService>(UsersService);
-    usersService2 = module2.get<UsersService>(UsersService);
   });
 
   describe('CreateUser Method', () => {
@@ -54,9 +42,12 @@ describe('UsersService', () => {
     });
 
     it('should throw conflict exception when username is already taken', async () => {
+      MockUsersModel.findOne.mockReturnValue(
+        () => MockUserSchemaWithHashedPassword,
+      );
       const user = new CreateUserDto();
       user.password = 'password';
-      await expect(usersService2.createUser(user)).rejects.toThrow(
+      await expect(usersService.createUser(user)).rejects.toThrow(
         new ConflictException(`Username: ${user.username} is already taken`),
       );
     });
@@ -68,10 +59,12 @@ describe('UsersService', () => {
     });
 
     it('should return a successful response', async () => {
-      const findByUsernameSpy = jest.spyOn(usersService2, 'findByUsername');
-      const result = await usersService2.findByUsername(
-        MockUserSchema.username,
+      MockUsersModel.findOne.mockResolvedValueOnce(
+        () => MockUserSchemaWithHashedPassword,
       );
+      const findByUsernameSpy = jest.spyOn(usersService, 'findByUsername');
+      const result = await usersService.findByUsername(MockUserSchema.username);
+      console.log(result);
       expect(findByUsernameSpy).toHaveBeenCalledWith(MockUserSchema.username);
       expect(result).toEqual(MockUserSchemaWithHashedPassword);
     });

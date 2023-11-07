@@ -12,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './stores.dto';
-import { JwtAuthGuard } from 'src/guards/jwt-auth-guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth-guard';
 import { DeleteResult } from 'mongodb';
-import { PaginationInput } from 'src/base/dto';
+import { PaginationInput } from '../../base/dto';
 
 @Controller('stores')
 @UseGuards(JwtAuthGuard)

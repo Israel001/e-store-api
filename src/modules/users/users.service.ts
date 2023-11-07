@@ -10,9 +10,9 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async createUser(user: CreateUserDto) {
-    const existingUser = await this.userModel
-      .findOne({ username: user.username })
-      .exec();
+    const existingUser = await this.userModel.findOne({
+      username: user.username,
+    });
     if (existingUser)
       throw new ConflictException(
         `Username: ${user.username} is already taken`,
@@ -30,6 +30,6 @@ export class UsersService {
   }
 
   async findByUsername(username: string): Promise<User> {
-    return this.userModel.findOne({ username }).exec();
+    return this.userModel.findOne({ username });
   }
 }
