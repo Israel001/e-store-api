@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Product } from 'src/schemas/product.schema';
-import { Store } from 'src/schemas/store.schema';
+import { Product } from '../../schemas/product.schema';
+import { Store } from '../../schemas/store.schema';
 import { CreateProductDto, UpdateProductDto } from './products.dto';
-import { IAuthContext } from 'src/types';
+import { IAuthContext } from '../../types';
 import { StoresService } from '../stores/stores.service';
 import { DeleteResult } from 'mongodb';
-import { PaginationInput } from 'src/base/dto';
-import { buildResponseDataWithPagination } from 'src/utils';
+import { PaginationInput } from '../../base/dto';
+import { buildResponseDataWithPagination } from '../../utils';
 
 @Injectable()
 export class ProductsService {

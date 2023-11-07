@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
+import { AuthService } from '../modules/auth/auth.service';
+import { UsersService } from '../modules/users/users.service';
 import {
   MockJwtService,
   MockUserSchema,
   MockUsersService,
   accessToken,
   hashedPassword,
-} from '../../testHelpers/tests.helper';
+} from '../testHelpers/tests.helper';
 import { JwtService } from '@nestjs/jwt';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
@@ -31,7 +31,7 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
   });
 
-  describe('ValidateUser Function', () => {
+  describe('ValidateUser Method', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -49,10 +49,14 @@ describe('AuthService', () => {
       expect(result).toEqual({ ...MockUserSchema, password: hashedPassword });
     });
 
+    it('should throw unauthorized exception when password is incorrect', async () => {
+      await expect(
+        authService.validateUser(MockUserSchema.username, 'wrong password'),
+      ).rejects.toThrow(new UnauthorizedException('Incorrect details'));
+    });
+
     it('should throw not found exception when user not found', async () => {
-      MockUsersService.findByUsername.mockRejectedValueOnce(
-        new NotFoundException('User not found'),
-      );
+      MockUsersService.findByUsername.mockReturnValue(null);
       await expect(
         authService.validateUser(
           MockUserSchema.username,
@@ -60,21 +64,9 @@ describe('AuthService', () => {
         ),
       ).rejects.toThrow(new NotFoundException('User not found'));
     });
-
-    it('should throw unauthorized exception when password is incorrect', async () => {
-      MockUsersService.findByUsername.mockRejectedValueOnce(
-        new UnauthorizedException('Incorrect details'),
-      );
-      await expect(
-        authService.validateUser(
-          MockUserSchema.username,
-          MockUserSchema.password,
-        ),
-      ).rejects.toThrow(new UnauthorizedException('Incorrect details'));
-    });
   });
 
-  describe('Login Function', () => {
+  describe('Login Method', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });

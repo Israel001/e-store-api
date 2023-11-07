@@ -12,6 +12,14 @@ export const MockUserSchema = {
   _id: new ObjectId('6548fd31bcab8291bf88fdcd'),
 };
 
+export const MockUserSchemaWithHashedPassword = {
+  name: 'Israel',
+  username: 'izzy',
+  password: hashedPassword,
+  store: [],
+  _id: new ObjectId('6548fd31bcab8291bf88fdcd'),
+};
+
 export const MockUsersService = {
   createUser: jest.fn(() => MockUserSchema),
   findByUsername: jest.fn(() => {
@@ -25,3 +33,23 @@ export const MockUsersService = {
 export const MockJwtService = {
   sign: jest.fn(() => accessToken),
 };
+
+export class MockUsersModel {
+  static findOne() {
+    return {
+      exec: jest.fn(),
+    };
+  }
+
+  save() {
+    return MockUserSchemaWithHashedPassword;
+  }
+}
+
+export class MockUsersModel2 {
+  static findOne() {
+    return {
+      exec: jest.fn(() => MockUserSchemaWithHashedPassword),
+    };
+  }
+}

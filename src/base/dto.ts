@@ -1,6 +1,6 @@
 import { Type as NestJSType } from '@nestjs/common';
 import { IsOptional, IsNumberString, IsEnum } from 'class-validator';
-import { OrderDir } from 'src/types';
+import { OrderDir } from '../types';
 
 export class BasePaginatedResponseDto<T> {
   pagination?: {

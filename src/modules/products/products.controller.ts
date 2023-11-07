@@ -10,10 +10,10 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/guards/jwt-auth-guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth-guard';
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from './products.dto';
-import { PaginationInput } from 'src/base/dto';
+import { PaginationInput } from '../../base/dto';
 
 @Controller('products')
 export class ProductsController {
