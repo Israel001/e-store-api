@@ -8,10 +8,6 @@ services:
       - '8080:8080'
     env_file:
       - .env
-    environment:
-      DB_HOST: mongo
-      DB_USER: admin
-      DB_PASSWORD: password
     depends_on:
       - mongo
     volumes:

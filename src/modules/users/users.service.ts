@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './users.dto';
-import { User } from 'src/schemas/user.schema';
+import { User } from '../../schemas/user.schema';
 import bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,7 +17,10 @@ export class UsersService {
       throw new ConflictException(
         `Username: ${user.username} is already taken`,
       );
-    const hashedPassword = await bcrypt.hash(user.password, 12);
+    const hashedPassword = bcrypt.hashSync(
+      user.password,
+      bcrypt.genSaltSync(12),
+    );
     const createdUser = new this.userModel({
       name: user.name,
       username: user.username,

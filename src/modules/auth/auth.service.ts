@@ -18,7 +18,7 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<User> {
     const user = await this.usersService.findByUsername(username);
     if (!user) throw new NotFoundException('User not found');
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = bcrypt.compareSync(password, user.password);
     if (passwordMatch) {
       return user;
     }

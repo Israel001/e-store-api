@@ -17,29 +17,36 @@ export const buildResponseDataWithPagination = <T>(
   };
 };
 
-export const cleanupObjectProperties = (data: any) => {
+export const cleanupObjectProperties = (
+  data: any,
+  shouldCheckNested = true,
+) => {
   if (data && Array.isArray(data)) {
-    return data.map(cleanupObjectProperties);
-  } else if (data && typeof data == 'object') {
-    const dataValues = Object.values(data);
-    for (let val of dataValues) {
-      if (typeof val == 'object') {
-        if ((val as any).__v !== undefined) {
-          (val as any).__v = undefined;
+    return data.map((d) => cleanupObjectProperties(d));
+  } else if (data && typeof data == 'object' && Object.keys(data).length) {
+    if (shouldCheckNested) {
+      // nested objects/array cleanup
+      const dataValues = Object.values(data);
+      for (let val of dataValues) {
+        if (Array.isArray(val)) {
+          val = val.map((d) => cleanupObjectProperties(d));
+        } else if (typeof val == 'object') {
+          // setting shouldCheckNested as false to avoid a deeper level of recursion,
+          // which could lead to maximum call stack size being exceeded in js
+          val = cleanupObjectProperties(val, false);
+
+          // explicit cleanup for the `products` object whenever it is found,
+          // some properties needs to be explicitly cleaned up,
+          // because of the unstable structure returned from the response
+          if ((val as any).products !== undefined) {
+            (val as any).products = cleanupObjectProperties(
+              (val as any).products,
+            );
+          }
         }
-        if ((val as any)._id !== undefined) {
-          (val as any).id = (val as any)._id;
-          (val as any)._id = undefined;
-        }
-        if ((val as any).products !== undefined) {
-          (val as any).products = cleanupObjectProperties(
-            (val as any).products,
-          );
-        }
-      } else if (Array.isArray(val)) {
-        val = val.map(cleanupObjectProperties);
       }
     }
+
     if (data.__v !== undefined) {
       data.__v = undefined;
     }

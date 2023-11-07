@@ -70,10 +70,18 @@ export class ProductsService {
   ) {
     const productInDb = await this.productModel.findById(id).populate('store');
     if (!productInDb) throw new NotFoundException('Product not found');
-    if (!new Types.ObjectId(userId).equals(productInDb.store.user as any))
+    if (
+      !new Types.ObjectId(userId).equals(
+        productInDb.store.user as any as Types.ObjectId,
+      )
+    ) {
+      // Because the `user` is not auto-populated by mongoose, the actual value is returned as an ObjectId,
+      // but it points to UserModel type in the entity
+      // hence it needs to be casted as an ObjectId for TS to understand
       throw new ForbiddenException(
         'You are not authorized to update this product',
       );
+    }
     const duplicateFound = await this.productModel.findOne({
       name: product.name,
       _id: { $ne: id },
@@ -82,19 +90,21 @@ export class ProductsService {
       throw new ConflictException(
         `Another product with name: ${product.name} already exists`,
       );
-    if (typeof product.name !== 'undefined') productInDb.name = product.name;
-    if (typeof product.description !== 'undefined')
-      productInDb.description = product.description;
+
+    productInDb.name = product.name || productInDb.name;
+    productInDb.description = product.description || productInDb.description;
+    productInDb.weight = product.weight || productInDb.weight;
+    productInDb.category = product.category || productInDb.category;
+    productInDb.brand = product.brand || productInDb.brand;
+
+    //  Due to these properties being a number type, we have to explicitly check if their type is undefined,
+    //  because using the OR comparison method will result in an unexpected behavior when values like '0' is provided,
+    //  and this is because '0' is not a truthy value in js
     if (typeof product.price !== 'undefined') productInDb.price = product.price;
     if (typeof product.quantity !== 'undefined') {
       productInDb.quantity = product.quantity;
       productInDb.availability = product.quantity > 0 ? true : false;
     }
-    if (typeof product.weight !== 'undefined')
-      productInDb.weight = product.weight;
-    if (typeof product.category !== 'undefined')
-      productInDb.category = product.category;
-    if (typeof product.brand !== 'undefined') productInDb.brand = product.brand;
     return productInDb.save();
   }
 
