@@ -64,6 +64,17 @@ export class MockUsersModel {
     return undefined;
   });
 
+  static findById = jest.fn().mockImplementation(() => {
+    return {
+      exec: jest.fn(() => {
+        return {
+          ...MockUserSchema,
+          save: jest.fn(),
+        };
+      }),
+    };
+  });
+
   save() {
     return MockUserSchemaWithHashedPassword;
   }
@@ -90,7 +101,7 @@ export class MockStoresModel {
     return {
       populate: jest.fn(() => {
         return {
-          exec: jest.fn(),
+          exec: jest.fn(() => undefined),
         };
       }),
     };
@@ -109,6 +120,12 @@ export class MockStoresModel {
       }),
     };
   });
+
+  save() {
+    return {
+      toObject: jest.fn(() => MockStoreSchema),
+    };
+  }
 }
 
 export class MockProductsModel {

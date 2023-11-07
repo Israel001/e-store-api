@@ -188,4 +188,21 @@ describe('StoresService', () => {
       expect(result).toEqual(DeleteResult);
     });
   });
+
+  describe('CreateStore Method', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return a successful response', async () => {
+      MockStoresModel.findOne.mockReturnValue({
+        exec: jest.fn(() => undefined),
+      });
+      const store = new CreateStoreDto();
+      const createStoreSpy = jest.spyOn(storesService, 'createStore');
+      const result = await storesService.createStore(store, AuthContext);
+      expect(createStoreSpy).toHaveBeenCalledWith(store, AuthContext);
+      expect(result).toEqual(MockStoreSchema);
+    });
+  });
 });
